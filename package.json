@@ -1,0 +1,28 @@
+{
+  "name": "hearthstone-watcher",
+  "version": "1.0.0",
+  "description": "hearthstone log watcher",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/antwang2/hearthstone-watcher.git"
+  },
+  "keywords": [
+    "hearthstone",
+    "log",
+    "parser",
+    "watcher",
+    "watch",
+    "tool",
+    "card"
+  ],
+  "author": "antwang",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/antwang2/hearthstone-watcher/issues"
+  },
+  "homepage": "https://github.com/antwang2/hearthstone-watcher#readme"
+}
