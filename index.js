@@ -18,7 +18,7 @@ if (/^win/.test(os.platform())) {
 } else {
   console.log('OS X platform detected.');
   params.logFile = path.join(process.env.HOME, 'Library', 'Logs', 'Unity', 'Player.log');
-  params.configFile = path.join(process.env.HOME, 'Library', 'Preferences', 'Blizzard', 'Hearthstone', 'log.config');
+  params.configFile = path.join(process.env.HOME, 'L ibrary', 'Preferences', 'Blizzard', 'Hearthstone', 'log.config');
 }
 
 function LogWatcher() {
@@ -27,43 +27,7 @@ function LogWatcher() {
 
 LogWatcher.prototype.start = function() {
   this.fileSize = fs.statSync(this.currParams.logFile).size;
-  // fs.watchFile(this.currParams.logFile, (current, previous) => {
-  //   if (current.mtime <= previous.mtime) {
-  //     return;
-  //   }
-  //   var newFileSize = fs.statSync(this.currParams.logFile).size;
-  //   var sizeDiff = newFileSize - fileSize;
-  //   if (sizeDiff < 0) {
-  //     fileSize = 0;
-  //     sizeDiff = newFileSize;
-  //   }
-  //   var buffer = new Buffer(sizeDiff);
-  //   var fileDescriptor = fs.openSync(this.currParams.logFile, 'r');
-  //   fs.readSync(fileDescriptor, buffer, 0, sizeDiff, fileSize);
-  //   fs.closeSync(fileDescriptor);
-  //   fileSize = newFileSize;
-  //
-  //   console.log(buffer.toString());
-  //
-  // });
-  // fs.watch(this.currParams.logFile, (eventType, filename) => {
-  //   console.log(`${eventType} in log.`);
-  //   if (eventType == "change") {
-  //     var newFileSize = fs.statSync(this.currParams.logFile).size;
-  //     var sizeDiff = newFileSize - fileSize;
-  //     if (sizeDiff < 0) {
-  //       fileSize = 0;
-  //       sizeDiff = newFileSize;
-  //     }
-  //     var buffer = new Buffer(sizeDiff);
-  //     var fileDescriptor = fs.openSync(this.currParams.logFile, 'r');
-  //     fs.readSync(fileDescriptor, buffer, 0, sizeDiff, fileSize);
-  //     fs.closeSync(fileDescriptor);
-  //     fileSize = newFileSize;
-  //
-  //     console.log(buffer.toString());
-  //   }
-  // });
+  console.log(this.fileSize);
 }
 LogWatcher.prototype.update = function() {
   let newFileSize = fs.statSync(this.currParams.logFile).size;
@@ -77,9 +41,31 @@ LogWatcher.prototype.update = function() {
     var fileDescriptor = fs.openSync(this.currParams.logFile, 'r');
     fs.readSync(fileDescriptor, buffer, 0, sizeDiff, this.fileSize);
     fs.closeSync(fileDescriptor);
-    fileSize = newFileSize;
-
-    console.log(buffer.toString());
+    this.fileSize = newFileSize;
+    console.log(sizeDiff);
+    //console.log(buffer.toString());
+    parseBuffer(buffer.toString());
   }
+}
+function parseBuffer(inputBuffer) {
+  let lines = inputBuffer.toString().split('\n');
+  let blockLayers = 0;
+  let blocks = [];
+
+  for (line in lines) {
+    if (lines[line].includes("BLOCK_START")) {
+      if (blockLayers == 0) {
+        blocks.push([]);
+      }
+      blockLayers++;
+    }
+    if (blockLayers > 0) {
+      blocks[(blocks.length - 1)].push(lines[line]);
+    }
+    if (lines[line].includes("BLOCK_END")){
+      blockLayers--
+    }
+  }
+  console.log(blocks);
 }
 module.exports = LogWatcher
